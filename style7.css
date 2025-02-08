@@ -1,3 +1,4 @@
+/* General Reset */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
 body {
@@ -23,9 +24,14 @@ h1 {
     color: #00eaff;
     text-shadow: 0px 0px 20px rgba(0, 234, 255, 0.8);
 }
-img{
+
+img {
     border-radius: 10%;
+    width: 100%;
+    max-width: 220px;
+    height: auto;
 }
+
 .btn {
     display: inline-block;
     padding: 12px 25px;
@@ -46,7 +52,8 @@ img{
 
 .feature-container {
     display: flex;
-    justify-content: space-around;
+    flex-wrap: wrap;
+    justify-content: center;
     padding: 50px;
     animation: fadeInUp 2s ease-in-out;
 }
@@ -54,10 +61,12 @@ img{
 .feature {
     text-align: center;
     background: rgba(255, 255, 255, 0.1);
-    padding: 40px 10px 10px 10px;
+    padding: 20px;
     border-radius: 15px;
-    margin: 20px;
+    margin: 10px;
     transition: transform 0.4s ease;
+    width: 90%;
+    max-width: 300px;
 }
 
 .feature:hover {
@@ -83,9 +92,8 @@ h1, h2, h3 {
     animation: glow 3s infinite alternate;
 }
 
-#cta{
+#cta {
     text-align: center;
-
 }
 
 /* Animations */
@@ -97,4 +105,41 @@ h1, h2, h3 {
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .feature-container {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+    
+    .feature {
+        width: 100%;
+    }
+    
+    .btn {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    .btn {
+        font-size: 0.9rem;
+        padding: 8px 15px;
+    }
+    
+    .feature {
+        padding: 15px;
+    }
 }
