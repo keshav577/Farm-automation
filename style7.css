@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+body {
+    font-family: 'Orbitron', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(120deg, #000428, #004e92);
+    color: #fff;
+    overflow-x: hidden;
+}
+
+header {
+    text-align: center;
+    padding: 30px 20px;
+    background: rgba(0, 0, 0, 0.8);
+    animation: fadeIn 2s ease-in-out;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #00eaff;
+    text-shadow: 0px 0px 20px rgba(0, 234, 255, 0.8);
+}
+img{
+    border-radius: 10%;
+}
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    font-size: 1.2rem;
+    color: #fff;
+    background: #ff00ff;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.4s ease;
+    box-shadow: 0px 0px 10px rgba(255, 0, 255, 0.8);
+}
+
+.btn:hover {
+    transform: scale(1.1);
+    background: #00eaff;
+    box-shadow: 0px 0px 20px rgba(0, 234, 255, 0.8);
+}
+
+.feature-container {
+    display: flex;
+    justify-content: space-around;
+    padding: 50px;
+    animation: fadeInUp 2s ease-in-out;
+}
+
+.feature {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px 10px 10px 10px;
+    border-radius: 15px;
+    margin: 20px;
+    transition: transform 0.4s ease;
+}
+
+.feature:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0px 0px 20px rgba(0, 234, 255, 0.8);
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    animation: fadeIn 2s ease-in-out;
+}
+
+/* Glowing Floating Animation */
+@keyframes glow {
+    0% { text-shadow: 0px 0px 10px #00eaff; }
+    50% { text-shadow: 0px 0px 20px #ff00ff; }
+    100% { text-shadow: 0px 0px 10px #00eaff; }
+}
+
+h1, h2, h3 {
+    animation: glow 3s infinite alternate;
+}
+
+#cta{
+    text-align: center;
+
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}

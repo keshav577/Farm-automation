@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniTravels</title>
+    <style>
+        /* Hackathon-Style UniTravels Sign-Up Page with Weather-Inspired Background */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Orbitron', sans-serif;
+}
+
+body {
+    background: linear-gradient(120deg, #000428, #004e92);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 1.5s ease-in-out;
+    overflow: hidden;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    padding: 20px;
+    width: 350px;
+    height: 400px;
+    border-radius: 20px;
+    box-shadow: 0px 8px 16px rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.container:hover {
+    transform: scale(1.05);
+}
+
+h1 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    text-shadow: 0px 4px 10px rgba(255, 255, 255, 0.8);
+}
+
+input {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+input:focus {
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
+}
+
+button {
+    width: 84%;
+    padding: 10px;
+    background: linear-gradient(45deg, #4CAF50, #388E3C);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin: 12px 0;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.5);
+}
+
+button:hover {
+    background: linear-gradient(45deg, #388E3C, #2E7D32);
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 15px rgba(255, 255, 255, 0.8);
+}
+
+p {
+    margin-top: 10px;
+    font-size: 1rem;
+}
+
+a {
+    color: #ffea00;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+}
+
+a:hover {
+    color: #ffd700;
+    text-shadow: 0px 0px 5px rgba(255, 255, 0, 0.8);
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="Login">
+            <h1>SIGN-UP PAGE</h1>
+            <input type="text" id="name" placeholder="Enter your Name">
+            <input type="email" id="email" placeholder="Enter your Email">
+            <input type="password" id="password" placeholder="Enter your Password">
+            <button onclick="signUp()" id="sign-link">Sign Up</button>
+            <p id="loginMessage"></p>
+        </div>
+        <div class="login" onclick="signUp()"></div>
+            <p>Have an account? <a href="Login.html">Sign in</a></p>
+        </div>
+    </div>
+    <script>
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let isLoggedIn = JSON.parse(sessionStorage.getItem('isLoggedIn')) || false;
+        let currentUser = JSON.parse(sessionStorage.getItem('currentUser')) || null;
+        let selectedRide = {};
+
+        function signUp() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginMsg = document.getElementById('loginMessage');
+
+            if (name && email && password) {
+                users.push({ name, email, password });
+                localStorage.setItem('users', JSON.stringify(users));
+                loginMsg.textContent = "Sign up successful! You can now log in.";
+                window.location.href = "Login.html";
+            } else {
+                loginMsg.textContent = "Please enter a valid username and password.";
+            }
+        }
+    </script>
+</body>
+</html>

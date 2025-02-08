@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Price Prediction</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Hackathon-Style Crop Price Prediction CSS with Animations */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+h1 {
+    color: #4CAF50;
+    font-size: 2.5rem;
+    text-shadow: 0px 5px 10px rgba(0, 255, 0, 0.5);
+}
+
+form {
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 15px rgba(224, 217, 217, 0.2);
+    display: inline-block;
+    transition: transform 0.3s;
+}
+
+form:hover {
+    transform: scale(1.05);
+}
+
+select, button {
+    padding: 12px;
+    margin: 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+}
+
+select {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+}
+
+button {
+    background: #4CAF50;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+button:hover {
+    background: #45a049;
+    box-shadow: 0px 0px 10px rgba(0, 255, 0, 0.8);
+}
+
+#predictionResult {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    animation: slideUp 1s ease-in-out;
+}
+
+@keyframes slideUp {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+canvas {
+    max-width: 80vw;
+    max-height: 50vh;
+    border-radius: 10px;
+    box-shadow: 0px 5px 15px rgba(163, 107, 107, 0.2);
+}
+
+    </style>
+</head>
+<body>
+    <h1>Crop Price Prediction</h1>
+    <form id="cropForm">
+        <label for="crop">Choose a crop:</label>
+        <select id="crop" name="crop"></select>
+        <button type="submit">Predict Price</button>
+    </form>
+
+    <div id="predictionResult">
+        <h2>Predicted Prices:</h2>
+        <ul id="predictedPricesList"></ul>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="priceChart"></canvas>
+    </div>
+
+    <script>
+        const historicalData = {
+            "paddy": [{ year: 2020, price: 2000 }, { year: 2021, price: 2100 }, { year: 2022, price: 2200 }, { year: 2023, price: 2300 }, { year: 2024, price: 2320 }],
+    "wheat": [{ year: 2020, price: 1900 }, { year: 2021, price: 2000 }, { year: 2022, price: 2100 }, { year: 2023, price: 2200 }, { year: 2024, price: 2250 }],
+    "maize": [{ year: 2020, price: 1750 }, { year: 2021, price: 1800 }, { year: 2022, price: 1850 }, { year: 2023, price: 1900 }, { year: 2024, price: 1950 }],
+    "barley": [{ year: 2020, price: 1400 }, { year: 2021, price: 1450 }, { year: 2022, price: 1500 }, { year: 2023, price: 1550 }, { year: 2024, price: 1600 }],
+    "jowar": [{ year: 2020, price: 3200 }, { year: 2021, price: 3300 }, { year: 2022, price: 3400 }, { year: 2023, price: 3371 }, { year: 2024, price: 3421 }],
+    "bajra": [{ year: 2020, price: 2500 }, { year: 2021, price: 2550 }, { year: 2022, price: 2600 }, { year: 2023, price: 2625 }, { year: 2024, price: 2650 }],
+    "ragi": [{ year: 2020, price: 4000 }, { year: 2021, price: 4100 }, { year: 2022, price: 4200 }, { year: 2023, price: 4290 }, { year: 2024, price: 4350 }],
+    "oats": [{ year: 2020, price: 2200 }, { year: 2021, price: 2250 }, { year: 2022, price: 2300 }, { year: 2023, price: 2350 }, { year: 2024, price: 2400 }],
+    "rye": [{ year: 2020, price: 2600 }, { year: 2021, price: 2700 }, { year: 2022, price: 2800 }, { year: 2023, price: 2850 }, { year: 2024, price: 2900 }],
+    "quinoa": [{ year: 2020, price: 6000 }, { year: 2021, price: 6200 }, { year: 2022, price: 6400 }, { year: 2023, price: 6600 }, { year: 2024, price: 6700 }],
+    "sugarcane": [{ year: 2020, price: 3100 }, { year: 2021, price: 3200 }, { year: 2022, price: 3300 }, { year: 2023, price: 3400 }, { year: 2024, price: 3500 }],
+    "cotton": [{ year: 2020, price: 5500 }, { year: 2021, price: 5700 }, { year: 2022, price: 5900 }, { year: 2023, price: 6100 }, { year: 2024, price: 6200 }],
+    "groundnut": [{ year: 2020, price: 4600 }, { year: 2021, price: 4700 }, { year: 2022, price: 4800 }, { year: 2023, price: 4900 }, { year: 2024, price: 5000 }],
+    "soybean": [{ year: 2020, price: 3700 }, { year: 2021, price: 3800 }, { year: 2022, price: 3900 }, { year: 2023, price: 4000 }, { year: 2024, price: 4100 }],
+    "sunflower": [{ year: 2020, price: 4300 }, { year: 2021, price: 4400 }, { year: 2022, price: 4500 }, { year: 2023, price: 4600 }, { year: 2024, price: 4700 }],
+    "mustard": [{ year: 2020, price: 3600 }, { year: 2021, price: 3700 }, { year: 2022, price: 3800 }, { year: 2023, price: 3900 }, { year: 2024, price: 4000 }],
+    "tomato": [{ year: 2020, price: 2500 }, { year: 2021, price: 2600 }, { year: 2022, price: 2700 }, { year: 2023, price: 2800 }, { year: 2024, price: 2900 }],
+    "onion": [{ year: 2020, price: 2100 }, { year: 2021, price: 2200 }, { year: 2022, price: 2300 }, { year: 2023, price: 2400 }, { year: 2024, price: 2500 }],
+    "apple": [{ year: 2020, price: 7000 }, { year: 2021, price: 7200 }, { year: 2022, price: 7400 }, { year: 2023, price: 7600 }, { year: 2024, price: 7800 }],
+    "banana": [{ year: 2020, price: 4000 }, { year: 2021, price: 4200 }, { year: 2022, price: 4400 }, { year: 2023, price: 4600 }, { year: 2024, price: 4700 }],
+    "mango": [{ year: 2020, price: 6000 }, { year: 2021, price: 6200 }, { year: 2022, price: 6400 }, { year: 2023, price: 6600 }, { year: 2024, price: 6700 }],
+    "watermelon": [{ year: 2020, price: 3000 }, { year: 2021, price: 3100 }, { year: 2022, price: 3200 }, { year: 2023, price: 3300 }, { year: 2024, price: 3400 }],
+    "pear": [{ year: 2020, price: 3000 }, { year: 2021, price: 3100 }, { year: 2022, price: 3200 }, { year: 2023, price: 3300 }, { year: 2024, price: 3350 }],
+    "plum": [{ year: 2020, price: 2800 }, { year: 2021, price: 2900 }, { year: 2022, price: 3000 }, { year: 2023, price: 3100 }, { year: 2024, price: 3150 }],
+    "litchi": [{ year: 2020, price: 5000 }, { year: 2021, price: 5100 }, { year: 2022, price: 5200 }, { year: 2023, price: 5300 }, { year: 2024, price: 5350 }],
+    "avocado": [{ year: 2020, price: 6000 }, { year: 2021, price: 6100 }, { year: 2022, price: 6200 }, { year: 2023, price: 6300 }, { year: 2024, price: 6350 }],
+    "strawberry": [{ year: 2020, price: 5500 }, { year: 2021, price: 5600 }, { year: 2022, price: 5700 }, { year: 2023, price: 5800 }, { year: 2024, price: 5850 }],
+    "raspberry": [{ year: 2020, price: 7000 }, { year: 2021, price: 7100 }, { year: 2022, price: 7200 }, { year: 2023, price: 7300 }, { year: 2024, price: 7350 }],
+    "blueberry": [{ year: 2020, price: 7500 }, { year: 2021, price: 7600 }, { year: 2022, price: 7700 }, { year: 2023, price: 7800 }, { year: 2024, price: 7850 }],
+    "jackfruit": [{ year: 2020, price: 4000 }, { year: 2021, price: 4100 }, { year: 2022, price: 4200 }, { year: 2023, price: 4300 }, { year: 2024, price: 4350 }],
+    "fig": [{ year: 2020, price: 4500 }, { year: 2021, price: 4600 }, { year: 2022, price: 4700 }, { year: 2023, price: 4800 }, { year: 2024, price: 4850 }],
+    "custard apple": [{ year: 2020, price: 3800 }, { year: 2021, price: 3900 }, { year: 2022, price: 4000 }, { year: 2023, price: 4100 }, { year: 2024, price: 4150 }],
+    "kiwi": [{ year: 2020, price: 9000 }, { year: 2021, price: 9100 }, { year: 2022, price: 9200 }, { year: 2023, price: 9300 }, { year: 2024, price: 9350 }],
+    "cherry": [{ year: 2020, price: 8500 }, { year: 2021, price: 8600 }, { year: 2022, price: 8700 }, { year: 2023, price: 8800 }, { year: 2024, price: 8850 }],
+    "apricot": [{ year: 2020, price: 6500 }, { year: 2021, price: 6600 }, { year: 2022, price: 6700 }, { year: 2023, price: 6800 }, { year: 2024, price: 6850 }],
+    "coriander": [{ year: 2020, price: 3000 }, { year: 2021, price: 3100 }, { year: 2022, price: 3200 }, { year: 2023, price: 3300 }, { year: 2024, price: 3350 }],
+    "cumin": [{ year: 2020, price: 5000 }, { year: 2021, price: 5100 }, { year: 2022, price: 5200 }, { year: 2023, price: 5300 }, { year: 2024, price: 5350 }],
+    "mustard": [{ year: 2020, price: 4200 }, { year: 2021, price: 4300 }, { year: 2022, price: 4400 }, { year: 2023, price: 4500 }, { year: 2024, price: 4550 }],
+    "cardamom": [{ year: 2020, price: 9000 }, { year: 2021, price: 9100 }, { year: 2022, price: 9200 }, { year: 2023, price: 9300 }, { year: 2024, price: 9350 }],
+    "black pepper": [{ year: 2020, price: 7500 }, { year: 2021, price: 7600 }, { year: 2022, price: 7700 }, { year: 2023, price: 7800 }, { year: 2024, price: 7850 }],
+    "cloves": [{ year: 2020, price: 12000 }, { year: 2021, price: 12100 }, { year: 2022, price: 12200 }, { year: 2023, price: 12300 }, { year: 2024, price: 12350 }],
+    "nutmeg": [{ year: 2020, price: 9500 }, { year: 2021, price: 9600 }, { year: 2022, price: 9700 }, { year: 2023, price: 9800 }, { year: 2024, price: 9850 }],
+    "star anise": [{ year: 2020, price: 11000 }, { year: 2021, price: 11100 }, { year: 2022, price: 11200 }, { year: 2023, price: 11300 }, { year: 2024, price: 11350 }],
+    "mace": [{ year: 2020, price: 10000 }, { year: 2021, price: 10100 }, { year: 2022, price: 10200 }, { year: 2023, price: 10300 }, { year: 2024, price: 10350 }],
+    "bay leaf": [{ year: 2020, price: 4000 }, { year: 2021, price: 4100 }, { year: 2022, price: 4200 }, { year: 2023, price: 4300 }, { year: 2024, price: 4350 }],
+    "curry leaves": [{ year: 2020, price: 3800 }, { year: 2021, price: 3900 }, { year: 2022, price: 4000 }, { year: 2023, price: 4100 }, { year: 2024, price: 4150 }],
+    "saffron": [{ year: 2020, price: 150000 }, { year: 2021, price: 151000 }, { year: 2022, price: 152000 }, { year: 2023, price: 153000 }, { year: 2024, price: 153500 }],
+    "tamarind": [{ year: 2020, price: 7000 }, { year: 2021, price: 7100 }, { year: 2022, price: 7200 }, { year: 2023, price: 7300 }, { year: 2024, price: 7350 }],
+    "sugarcane": [{ year: 2020, price: 3000 }, { year: 2021, price: 3100 }, { year: 2022, price: 3200 }, { year: 2023, price: 3300 }, { year: 2024, price: 3350 }],
+    "tea": [{ year: 2020, price: 5000 }, { year: 2021, price: 5100 }, { year: 2022, price: 5200 }, { year: 2023, price: 5300 }, { year: 2024, price: 5350 }],
+    "coffee": [{ year: 2020, price: 7000 }, { year: 2021, price: 7100 }, { year: 2022, price: 7200 }, { year: 2023, price: 7300 }, { year: 2024, price: 7350 }],
+    "jute": [{ year: 2020, price: 3500 }, { year: 2021, price: 3600 }, { year: 2022, price: 3700 }, { year: 2023, price: 3800 }, { year: 2024, price: 3850 }],
+    "cotton": [{ year: 2020, price: 4500 }, { year: 2021, price: 4600 }, { year: 2022, price: 4700 }, { year: 2023, price: 4800 }, { year: 2024, price: 4850 }],
+    "rubber": [{ year: 2020, price: 9000 }, { year: 2021, price: 9100 }, { year: 2022, price: 9200 }, { year: 2023, price: 9300 }, { year: 2024, price: 9350 }],
+    "cocoa": [{ year: 2020, price: 11000 }, { year: 2021, price: 11100 }, { year: 2022, price: 11200 }, { year: 2023, price: 11300 }, { year: 2024, price: 11350 }],
+    "vanilla": [{ year: 2020, price: 15000 }, { year: 2021, price: 15100 }, { year: 2022, price: 15200 }, { year: 2023, price: 15300 }, { year: 2024, price: 15350 }],
+    "betel leaf": [{ year: 2020, price: 3800 }, { year: 2021, price: 3900 }, { year: 2022, price: 4000 }, { year: 2023, price: 4100 }, { year: 2024, price: 4150 }],
+    "hemp": [{ year: 2020, price: 6000 }, { year: 2021, price: 6100 }, { year: 2022, price: 6200 }, { year: 2023, price: 6300 }, { year: 2024, price: 6350 }],
+    "aloe vera": [{ year: 2020, price: 2500 }, { year: 2021, price: 2600 }, { year: 2022, price: 2700 }, { year: 2023, price: 2800 }, { year: 2024, price: 2850 }],
+    "neem": [{ year: 2020, price: 3000 }, { year: 2021, price: 3100 }, { year: 2022, price: 3200 }, { year: 2023, price: 3300 }, { year: 2024, price: 3350 }],
+    "lemongrass": [{ year: 2020, price: 4500 }, { year: 2021, price: 4600 }, { year: 2022, price: 4700 }, { year: 2023, price: 4800 }, { year: 2024, price: 4850 }],
+    "ashwagandha": [{ year: 2020, price: 8000 }, { year: 2021, price: 8100 }, { year: 2022, price: 8200 }, { year: 2023, price: 8300 }, { year: 2024, price: 8350 }],
+    "ginseng": [{ year: 2020, price: 10000 }, { year: 2021, price: 10100 }, { year: 2022, price: 10200 }, { year: 2023, price: 10300 }, { year: 2024, price: 10350 }],
+    "turmeric": [{ year: 2020, price: 4000 }, { year: 2021, price: 4100 }, { year: 2022, price: 4200 }, { year: 2023, price: 4300 }, { year: 2024, price: 4350 }],
+    "ginger": [{ year: 2020, price: 5500 }, { year: 2021, price: 5600 }, { year: 2022, price: 5700 }, { year: 2023, price: 5800 }, { year: 2024, price: 5850 }],
+    "black sesame": [{ year: 2020, price: 6500 }, { year: 2021, price: 6600 }, { year: 2022, price: 6700 }, { year: 2023, price: 6800 }, { year: 2024, price: 6850 }],
+    "white sesame": [{ year: 2020, price: 6000 }, { year: 2021, price: 6100 }, { year: 2022, price: 6200 }, { year: 2023, price: 6300 }, { year: 2024, price: 6350 }],
+    "chia seeds": [{ year: 2020, price: 7000 }, { year: 2021, price: 7100 }, { year: 2022, price: 7200 }, { year: 2023, price: 7300 }, { year: 2024, price: 7350 }],
+    "flaxseeds": [{ year: 2020, price: 5000 }, { year: 2021, price: 5100 }, { year: 2022, price: 5200 }, { year: 2023, price: 5300 }, { year: 2024, price: 5350 }],
+    "poppy seeds": [{ year: 2020, price: 8500 }, { year: 2021, price: 8600 }, { year: 2022, price: 8700 }, { year: 2023, price: 8800 }, { year: 2024, price: 8850 }],
+    "mustard seeds": [{ year: 2020, price: 4800 }, { year: 2021, price: 4900 }, { year: 2022, price: 5000 }, { year: 2023, price: 5100 }, { year: 2024, price: 5150 }],
+    "safflower seeds": [{ year: 2020, price: 7500 }, { year: 2021, price: 7600 }, { year: 2022, price: 7700 }, { year: 2023, price: 7800 }, { year: 2024, price: 7850 }],
+    "millets": [{ year: 2020, price: 3200 }, { year: 2021, price: 3300 }, { year: 2022, price: 3400 }, { year: 2023, price: 3500 }, { year: 2024, price: 3550 }],
+    "amaranth": [{ year: 2020, price: 4500 }, { year: 2021, price: 4600 }, { year: 2022, price: 4700 }, { year: 2023, price: 4800 }, { year: 2024, price: 4850 }],
+    "buckwheat": [{ year: 2020, price: 5000 }, { year: 2021, price: 5100 }, { year: 2022, price: 5200 }, { year: 2023, price: 5300 }, { year: 2024, price: 5350 }],
+    "barley grass": [{ year: 2020, price: 3800 }, { year: 2021, price: 3900 }, { year: 2022, price: 4000 }, { year: 2023, price: 4100 }, { year: 2024, price: 4150 }],
+    "quinoa": [{ year: 2020, price: 7000 }, { year: 2021, price: 7100 }, { year: 2022, price: 7200 }, { year: 2023, price: 7300 }, { year: 2024, price: 7350 }],
+    "moringa": [{ year: 2020, price: 6000 }, { year: 2021, price: 6100 }, { year: 2022, price: 6200 }, { year: 2023, price: 6300 }, { year: 2024, price: 6350 }],
+    "sweet potato": [{ year: 2020, price: 3000 }, { year: 2021, price: 3100 }, { year: 2022, price: 3200 }, { year: 2023, price: 3300 }, { year: 2024, price: 3350 }],
+    "yam": [{ year: 2020, price: 2800 }, { year: 2021, price: 2900 }, { year: 2022, price: 3000 }, { year: 2023, price: 3100 }, { year: 2024, price: 3150 }],
+    "taro": [{ year: 2020, price: 3500 }, { year: 2021, price: 3600 }, { year: 2022, price: 3700 }, { year: 2023, price: 3800 }, { year: 2024, price: 3850 }],
+    "cassava": [{ year: 2020, price: 4000 }, { year: 2021, price: 4100 }, { year: 2022, price: 4200 }, { year: 2023, price: 4300 }, { year: 2024, price: 4350 }],
+    "sorghum": [{ year: 2020, price: 3200 }, { year: 2021, price: 3300 }, { year: 2022, price: 3400 }, { year: 2023, price: 3500 }, { year: 2024, price: 3550 }],
+    "black rice": [{ year: 2020, price: 6000 }, { year: 2021, price: 6100 }, { year: 2022, price: 6200 }, { year: 2023, price: 6300 }, { year: 2024, price: 6350 }],
+    "red rice": [{ year: 2020, price: 5500 }, { year: 2021, price: 5600 }, { year: 2022, price: 5700 }, { year: 2023, price: 5800 }, { year: 2024, price: 5850 }],
+    "wild rice": [{ year: 2020, price: 7500 }, { year: 2021, price: 7600 }, { year: 2022, price: 7700 }, { year: 2023, price: 7800 }, { year: 2024, price: 7850 }],
+    "pearl barley": [{ year: 2020, price: 5000 }, { year: 2021, price: 5100 }, { year: 2022, price: 5200 }, { year: 2023, price: 5300 }, { year: 2024, price: 5350 }],
+    "sago": [{ year: 2020, price: 4000 }, { year: 2021, price: 4100 }, { year: 2022, price: 4200 }, { year: 2023, price: 4300 }, { year: 2024, price: 4350 }],
+    "fenugreek": [{ year: 2020, price: 3500 }, { year: 2021, price: 3600 }, { year: 2022, price: 3700 }, { year: 2023, price: 3800 }, { year: 2024, price: 3850 }],
+    "basil": [{ year: 2020, price: 4500 }, { year: 2021, price: 4600 }, { year: 2022, price: 4700 }, { year: 2023, price: 4800 }, { year: 2024, price: 4850 }],
+    "mint": [{ year: 2020, price: 3000 }, { year: 2021, price: 3100 }, { year: 2022, price: 3200 }, { year: 2023, price: 3300 }, { year: 2024, price: 3350 }],
+    "rosemary": [{ year: 2020, price: 4800 }, { year: 2021, price: 4900 }, { year: 2022, price: 5000 }, { year: 2023, price: 5100 }, { year: 2024, price: 5150 }],
+    "thyme": [{ year: 2020, price: 5500 }, { year: 2021, price: 5600 }, { year: 2022, price: 5700 }, { year: 2023, price: 5800 }, { year: 2024, price: 5850 }],
+    "oregano": [{ year: 2020, price: 5200 }, { year: 2021, price: 5300 }, { year: 2022, price: 5400 }, { year: 2023, price: 5500 }, { year: 2024, price: 5550 }],
+    "dill": [{ year: 2020, price: 4400 }, { year: 2021, price: 4500 }, { year: 2022, price: 4600 }, { year: 2023, price: 4700 }, { year: 2024, price: 4750 }],
+    "chervil": [{ year: 2020, price: 5800 }, { year: 2021, price: 5900 }, { year: 2022, price: 6000 }, { year: 2023, price: 6100 }, { year: 2024, price: 6150 }],
+    "tarragon": [{ year: 2020, price: 6200 }, { year: 2021, price: 6300 }, { year: 2022, price: 6400 }, { year: 2023, price: 6500 }, { year: 2024, price: 6550 }]
+        };
+
+        // Populate crop dropdown
+        const cropSelect = document.getElementById('crop');
+        Object.keys(historicalData).forEach(crop => {
+            let option = document.createElement('option');
+            option.value = crop;
+            option.textContent = crop.charAt(0).toUpperCase() + crop.slice(1);
+            cropSelect.appendChild(option);
+        });
+
+        function predictPrices(crop) {
+            const data = historicalData[crop];
+
+            let totalIncrease = 0;
+            for (let i = 1; i < data.length; i++) {
+                totalIncrease += (data[i].price - data[i - 1].price);
+            }
+            const avgIncrease = totalIncrease / (data.length - 1);
+
+            const lastPrice = data[data.length - 1].price;
+            const predicted2025 = lastPrice + avgIncrease;
+            const predicted2026 = predicted2025 + avgIncrease;
+
+            return [predicted2025, predicted2026];
+        }
+
+        function updateChart(crop, predictedPrices) {
+            const data = historicalData[crop];
+            const years = data.map(d => d.year);
+            const prices = data.map(d => d.price);
+            const predictedYears = [2025, 2026];
+
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            if (window.chart) window.chart.destroy();
+
+            window.chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [...years, ...predictedYears],
+                    datasets: [
+                        {
+                            label: 'Historical Prices',
+                            data: prices.concat([null, null]),
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                        },
+                        {
+                            label: 'Predicted Prices',
+                            data: [...Array(prices.length).fill(null), ...predictedPrices],
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('cropForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const crop = document.getElementById('crop').value;
+            const predictedPrices = predictPrices(crop);
+
+            document.getElementById('predictedPricesList').innerHTML = `
+                <p>Predicted Price for 2025: ₹${predictedPrices[0].toFixed(2)}</p>
+                <p>Predicted Price for 2026: ₹${predictedPrices[1].toFixed(2)}</p>
+            `;
+
+            updateChart(crop, predictedPrices);
+        });
+    </script>
+    <p style="margin-top: 20px; font-weight: bold;">Note: All prices mentioned are per 100 kg.</p>
+</body>
+</html>
